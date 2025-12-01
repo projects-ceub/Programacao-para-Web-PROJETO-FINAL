@@ -4,10 +4,22 @@ import { useNavigate } from "react-router";
 import { CreditCard, Lock, CheckCircle } from "lucide-react";
 
 const Checkout = () => {
-  const { cartItems, cartTotal, setCartItems } = useCart(); // Precisamos expor setCartItems no Context (ver passo 4)
+  const { cartItems, cartTotal, setCartItems } = useCart();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
+  const handleCardChange = (e) => {
+    // Remove não dígitos e agrupa de 4 em 4
+    const value = e.target.value.replace(/\D/g, "");
+    setCardNumber(value.replace(/(\d{4})(?=\d)/g, "$1 "));
+  };
+  const handleExpiryChange = (e) => {
+    // Remove não dígitos e adiciona barra após o segundo dígito
+    const value = e.target.value.replace(/\D/g, "");
+    setExpiryDate(value.replace(/(\d{2})(?=\d)/g, "$1/"));
+  };
 
   // Redireciona se tentar acessar checkout com carrinho vazio
   useEffect(() => {
@@ -89,19 +101,38 @@ const Checkout = () => {
               <input type="text" required className="w-full bg-neutral-800 border border-neutral-700 rounded-lg p-3 text-white focus:outline-none focus:border-indigo-500 transition" placeholder="NOME COMO NO CARTAO" />
             </div>
 
+            {/* Input Número do Cartão */}
             <div>
               <label className="block text-sm text-neutral-400 mb-2">Número do Cartão</label>
               <div className="relative">
-                <input type="text" required maxLength="19" className="w-full bg-neutral-800 border border-neutral-700 rounded-lg p-3 pl-10 text-white focus:outline-none focus:border-indigo-500 transition" placeholder="0000 0000 0000 0000" />
-                <CreditCard className="absolute left-3 top-3.5 text-neutral-500" size={18} />
+                <input 
+                  type="text" 
+                  required 
+                  maxLength="19" 
+                  value={cardNumber}
+                  onChange={handleCardChange}
+                  className="w-full bg-neutral-800 border border-neutral-700 rounded-lg p-3 pl-10 text-white focus:outline-none focus:border-indigo-500 transition" 
+                  placeholder="0000 0000 0000 0000" 
+                />
+                <CreditCard className="absolute left-3 top-3.5 text-neutral-500" size={16} />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
+              {/* Input Validade */}
               <div>
                 <label className="block text-sm text-neutral-400 mb-2">Validade</label>
-                <input type="text" required maxLength="5" className="w-full bg-neutral-800 border border-neutral-700 rounded-lg p-3 text-white focus:outline-none focus:border-indigo-500 transition" placeholder="MM/AA" />
+                <input 
+                  type="text" 
+                  required 
+                  maxLength="5" 
+                  value={expiryDate}
+                  onChange={handleExpiryChange}
+                  className="w-full bg-neutral-800 border border-neutral-700 rounded-lg p-3 text-white focus:outline-none focus:border-indigo-500 transition" 
+                  placeholder="MM/AA" 
+                />
               </div>
+              
               <div>
                 <label className="block text-sm text-neutral-400 mb-2">CVV</label>
                 <input type="text" required maxLength="3" className="w-full bg-neutral-800 border border-neutral-700 rounded-lg p-3 text-white focus:outline-none focus:border-indigo-500 transition" placeholder="123" />
